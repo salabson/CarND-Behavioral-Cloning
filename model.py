@@ -20,12 +20,19 @@ with open('/home/workspace/CarND-Behavioral-Cloning-P3/data/driving_log.csv') as
         measurements.append(float(line[3]))
         
 
+# Data augmentation
+augmented_images, augmented_measurements = [], []
+for image, measurement in zip(images, measurements):
+    augmented_images.append(image)
+    augmented_measurements.append(measurement)
+    augmented_images.append(cv2.flip(image,1))
+    augmented_measurements.append(measurement*-1.0)
 
     
 print(images[0].shape)
-X_train = np.array(images)
+X_train = np.array(augmented_images)
 print(X_train[0].shape)
-y_train = np.array(measurements)
+y_train = np.array(augmented_measurements)
 
 print("Summary")
 print("Number of training data {}".format(len(X_train)))
