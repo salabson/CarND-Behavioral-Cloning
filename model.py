@@ -60,15 +60,22 @@ from keras.layers.pooling import MaxPooling2D
 from keras.layers import Cropping2D
 
 model = Sequential()
+# Nomrmalize
 model.add(Lambda(lambda x: x/255-0.5, input_shape=(160,320,3)))
-model.add(Cropping2D(cropping=((70,50),(0,0))))
-model.add(Conv2D(6, (5,5), activation='relu'))
-model.add(MaxPooling2D((2,2)))
-model.add(Conv2D(16, (5,5), activation='relu'))
-model.add(MaxPooling2D((2,2)))               
+# Cut unnecessary parts of the images
+model.add(Cropping2D(cropping=((70,25),(0,0))))
+# Create five convlution layers
+model.add(Conv2D(24,5,5, subsample=(2,2), activation='relu'))
+model.add(Conv2D(36, 5,5, subsample=(2,2), activation='relu'))
+model.add(Conv2D(48,5,5, subsample=(2,2), activation='relu'))
+model.add(Conv2D(64,3,3, activation='relu'))    
+model.add(Conv2D(64,3,3, activation='relu'))
+# Flatten the images
 model.add(Flatten())
-model.add(Dense(120, activation='relu'))   
-model.add(Dense(84, activation='relu'))
+# Create four fully connected layers
+model.add(Dense(100))   
+model.add(Dense(50))
+model.add(Dense(10))
 model.add(Dense(1))
 
 model.compile(optimizer="adam", loss="mse")
