@@ -10,15 +10,31 @@ with open('/home/workspace/CarND-Behavioral-Cloning-P3/data/driving_log.csv') as
       
     images=[]
     measurements=[]
-   
+    correction_factor=0.2
     for line in lines:
-        source_path = line[0]
-        filename = source_path.split("/")[-1]
-        current_path = "/home/workspace/CarND-Behavioral-Cloning-P3/data/IMG/" + filename                
-        image = cv2.imread(current_path)
-        images.append(image)
-        measurements.append(float(line[3]))
-        
+        for i in range(3):
+            if i==0:
+                source_path = line[i]
+                filename = source_path.split("/")[-1]
+                current_path = "/home/workspace/CarND-Behavioral-Cloning-P3/data/IMG/" + filename                
+                image = cv2.imread(current_path)
+                images.append(image)
+                measurements.append(float(line[3]))
+            elif i==1:
+                source_path = line[i]
+                filename = source_path.split("/")[-1]
+                current_path = "/home/workspace/CarND-Behavioral-Cloning-P3/data/IMG/" + filename                
+                image = cv2.imread(current_path)
+                images.append(image)
+                measurements.append(float(line[3])+correction_factor)
+            else:
+                source_path = line[i]
+                filename = source_path.split("/")[-1]
+                current_path = "/home/workspace/CarND-Behavioral-Cloning-P3/data/IMG/" + filename                
+                image = cv2.imread(current_path)
+                images.append(image)
+                measurements.append(float(line[3])-correction_factor)
+             
 
 # Data augmentation
 augmented_images, augmented_measurements = [], []
@@ -41,6 +57,7 @@ from keras.models import Sequential
 from keras.layers.core import Dense, Flatten, Lambda
 from keras.layers.convolutional import Conv2D
 from keras.layers.pooling import MaxPooling2D
+from keras.layers import Cropping2D
 
 model = Sequential()
 model.add(Lambda(lambda x: x/255-0.5, input_shape=(160,320,3)))
@@ -54,5 +71,5 @@ model.add(Dense(84, activation='relu'))
 model.add(Dense(1))
 
 model.compile(optimizer="adam", loss="mse")
-model.fit(X_train, y_train, validation_split=0.2, shuffle=True, epochs=5)
+model.fit(X_train, y_train, validation_split=0.2, shuffle=True, epochs=2)
 model.save("model.h5")
